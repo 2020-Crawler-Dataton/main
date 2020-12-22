@@ -1,2 +1,4 @@
+import ChromeExecutor
 if __name__ == '__main__':
-    print("hi")
+    driver = ChromeExecutor.ChromExecutor()
+    driver.run()
