@@ -16,6 +16,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from dateutil.parser import parse
 import time
+import CapturingAndParsing
 
 """ ------------------------------------------------------------------------"""
 
@@ -62,6 +63,7 @@ def auto_login(driver: webdriver):
 
 # This function will become a method of ChromeExecutor
 def skip_store_login_info(driver:webdriver):
+    time.sleep(1)
     element = driver.find_element_by_xpath('//*[@id="react-root"]/section/main/div/div/div/div/button')
     try:
         element.click()
@@ -193,18 +195,21 @@ class ChromExecutor:
     driver = None
     capture = None
     wait = None
+    capture_and_parser = None
 
     def __init__(self):
         self.options = Options()
         self.options.add_argument('--start-fullscreen')  # 전체화면(f11 적용)
+        self.capture_and_parser = CapturingAndParsing.CapturingAndParsing()
 
     def run(self):
         self.driver = webdriver.Chrome('./chromedriver_win32/chromedriver_87.exe')
         self.driver.implicitly_wait(2)
+        self.driver.set_window_size(632, 1040)
         self.driver.get('https://www.instagram.com/')
         assert "Instagram" in self.driver.title
         auto_login(self.driver)
-
+        self.capture_and_parser.run(self.driver)
         # epoch = 125
         # for i in range(epoch):
         #     follow_influencers_by_recommendation(self.driver)
