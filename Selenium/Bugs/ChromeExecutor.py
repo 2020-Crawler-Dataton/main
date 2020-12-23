@@ -122,6 +122,56 @@ def select_genre(driver: webdriver):
         data_to_csv(data, genre_name, "genre")
 
 
+def select_top100(driver: webdriver):
+    url = "https://music.bugs.co.kr/chart"
+    request = requests.get(url)
+    html = request.text
+    bs = BeautifulSoup(html, 'html.parser')
+
+    titles = bs.select('p.title')
+    artists = bs.select('p.artist')
+    images = bs.select('a.thumbnail')
+
+    rank = []
+    title_list = []
+    artist_list = []
+    image_list = []
+
+    for i in range(len(titles)):
+        rank.append(i + 1)
+
+        title = str(titles[i].find('a').text)
+
+        anchor_list = artists[i].find_all('a')
+        if len(anchor_list) > 1:
+            attr = anchor_list[1]['onclick']
+            attr = attr.split("'")
+            attr = attr[1]
+            attr = attr.split("||")
+
+            for word in attr:
+                if word.isdigit():
+                    attr.remove(word)
+
+            artist = attr[1::2]
+            artist = ", ".join(artist)
+        else:
+            artist = artists[i].text.strip().split('\n')[0]
+
+        image = images[i].find('img')['src']
+
+        title_list.append(title)
+        artist_list.append(artist)
+        image_list.append(image)
+
+    data = zip(rank, title_list, artist_list, image_list)
+    top100_df = pd.DataFrame([x for x in data])
+    top100_df.columns = ['Rank', 'Title', 'Artist', 'Image']
+
+    top100_df.to_excel("./data/Top100.xlsx", index=False)
+    driver.back()
+
+
 """ --------------------------------------------------------------------------"""
 
 """
@@ -146,6 +196,7 @@ class ChromeExecutor:
         self.driver = webdriver.Chrome('./chromedriver_win32/chromedriver_87.exe')
         self.driver.implicitly_wait(2)
         self.driver.get('https://music.bugs.co.kr/musicpd')
-        select_style(self.driver)
-        select_genre(self.driver)
+        # select_style(self.driver)
+        # select_genre(self.driver)
+        select_top100(self.driver)
         self.driver.quit()
