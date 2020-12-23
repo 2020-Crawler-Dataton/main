@@ -5,16 +5,11 @@
 """ ---------------------------- import settings ----------------------------"""
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from bs4 import BeautifulSoup
-from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoAlertPresentException
 from selenium.common.exceptions import ElementClickInterceptedException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import StaleElementReferenceException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from dateutil.parser import parse
+
 import time
 import CapturingAndParsing
 
@@ -143,47 +138,43 @@ def skip_alarm_setting(driver: webdriver):
 #         print("Unexpected error!")
 #         print(e.__class__.__name__)
 
-# def follow_influencers_by_recommendation(driver: webdriver):
-#     try:
-#         recommendation_div = driver.find_element_by_xpath \
-#             ('//*[@id="react-root"]/section/main/section/div/div[3]/div/div/div[2]/div/div')
-#         follow_buttons = recommendation_div.find_elements_by_tag_name('button')
-#         for i in range(len(follow_buttons)):
-#             threshhold = 0
-#             print("option0")
-#             while str(follow_buttons[i].text) == "팔로우":
-#                 verified_txt = str(recommendation_div.find_elements_by_tag_name('span')[0].text)
-#                 print(verified_txt)
-#                 if verified_txt == "인증됨" or verified_txt == '':
-#                     ignore_button = recommendation_div.find_elements_by_tag_name('button')[0]
-#                     ignore_button.click()
-#                     break
-#                 threshhold += 1;
-#                 actions = webdriver.ActionChains(driver)
-#                 actions.move_to_element(follow_buttons[i]).click().perform()
-#                 if threshhold > 4:
-#                     time.sleep(120)
-#                 time.sleep(1)
-#     except ElementClickInterceptedException:
-#         print("!")
-#         driver.implicitly_wait(1)
-#     except NoSuchElementException:
-#         driver.implicitly_wait(1)
-#         follow_influencers_by_recomendation_option1(driver)
-#         print("no such elementException")
-#         print("!")
-#     except StaleElementReferenceException:
-#         driver.implicitly_wait(1)
-#         print('staleElemenetReferenceException')
-#         driver.refresh()
-#     except Exception as e:
-#         driver.implicitly_wait(1)
-#         print("Unexpected error!")
-#         print(e.__class__.__name__)
-
-
+def follow_influencers_by_recommendation(driver: webdriver):
+    try:
+        recommendation_div = driver.find_element_by_xpath \
+            ('//*[@id="react-root"]/section/main/section/div/div[3]/div/div/div[2]/div/div')
+        follow_buttons = recommendation_div.find_elements_by_tag_name('button')
+        for i in range(len(follow_buttons)):
+            threshhold = 0
+            print("option0")
+            while str(follow_buttons[i].text) == "팔로우":
+                verified_txt = str(recommendation_div.find_elements_by_tag_name('span')[0].text)
+                print(verified_txt)
+                if verified_txt == "인증됨" or verified_txt == '':
+                    actions = webdriver.ActionChains(driver)
+                    actions.move_to_element(follow_buttons[i]).click().perform()
+                threshhold += 1;
+                if threshhold > 4:
+                    time.sleep(120)
+                time.sleep(1)
+    except ElementClickInterceptedException:
+        print("!")
+        driver.implicitly_wait(1)
+    except NoSuchElementException:
+        driver.implicitly_wait(1)
+        #follow_influencers_by_recomendation_option1(driver)
+        print("no such elementException")
+        print("!")
+    except StaleElementReferenceException:
+        driver.implicitly_wait(1)
+        print('staleElemenetReferenceException')
+        driver.refresh()
+    except Exception as e:
+        driver.implicitly_wait(1)
+        print("Unexpected error!")
+        print(e.__class__.__name__)
 
 """ --------------------------------------------------------------------------"""
+
 
 """
 Class ChromeExecutor.
@@ -196,6 +187,7 @@ class ChromExecutor:
     capture = None
     wait = None
     capture_and_parser = None
+    classifier = None
 
     def __init__(self):
         self.options = Options()
@@ -203,18 +195,13 @@ class ChromExecutor:
         self.capture_and_parser = CapturingAndParsing.CapturingAndParsing()
 
     def run(self):
-        self.driver = webdriver.Chrome('./chromedriver_win32/chromedriver_87.exe')
-        self.driver.implicitly_wait(2)
-        self.driver.set_window_size(632, 1040)
-        self.driver.get('https://www.instagram.com/')
-        assert "Instagram" in self.driver.title
-        auto_login(self.driver)
-        self.capture_and_parser.run(self.driver)
-        # epoch = 125
-        # for i in range(epoch):
-        #     follow_influencers_by_recommendation(self.driver)
-
-
+            self.driver = webdriver.Chrome('resource/chromedriver_win32/chromedriver_87.exe')
+            self.driver.implicitly_wait(2)
+            self.driver.set_window_size(632, 1040)
+            self.driver.get('https://www.instagram.com/')
+            assert "Instagram" in self.driver.title
+            auto_login(self.driver)
+            self.capture_and_parser.run(self.driver)
 
 
 
