@@ -21,6 +21,6 @@ for f in glob.glob('../Selenium/Bugs/data/style/*.xlsx'):
 
 del all_data['Unnamed: 0']
 
-all_data = all_data.groupby(['Title', 'Artist'], as_index=False).agg({'Tagging': ' '.join})
+all_data = all_data.groupby(['Title', 'Artist'], as_index=False).agg({'Tagging': ', '.join})
 
 all_data.to_excel('music_tagging.xlsx')
