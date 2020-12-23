@@ -40,7 +40,8 @@ def select_song(driver: webdriver, title_list, artist_list, image_list):
     for i in range(len(titles)):
         if '[권리없는 곡]' in str(titles[i].text):
             continue
-        title = titles[i].text.strip().split('\n')[0]
+
+        title = str(titles[i].find('a').text)
 
         anchor_list = artists[i].find_all('a')
         if len(anchor_list) > 1:
